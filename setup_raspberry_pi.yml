@@ -8,7 +8,6 @@
         update_cache: yes
         upgrade: dist
         cache_valid_time: 3600
-
     # Installerer nødvendige avhengigheter
     - name: Installer nødvendige avhengigheter
       apt:
@@ -18,3 +17,20 @@
           - curl
           - software-properties-common
         state: present
+    # Opprett swap-fil
+    - name: Opprett swap-fil
+      command: fallocate -l 1G /swapfile
+
+    # Sett riktig tillatelser på swap-filen
+    - name: Sett riktig tillatelser på swap-filen
+      file:
+        path: /swapfile
+        mode: '0600'
+
+    # Init swap-filen
+    - name: Init swap-filen
+      command: mkswap /swapfile
+
+    # Aktiver swap-filen
+    - name: Aktiver swap-filen
+      command: swapon /swapfile
