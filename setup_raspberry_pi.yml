@@ -1,0 +1,20 @@
+---
+- hosts: raspberry_pi
+  become: true
+  tasks:
+    # Oppdater pakkelisten og oppgrader systemet
+    - name: Oppdater pakkelisten og oppgrader systemet
+      apt:
+        update_cache: yes
+        upgrade: dist
+        cache_valid_time: 3600
+
+    # Installerer nødvendige avhengigheter
+    - name: Installer nødvendige avhengigheter
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
