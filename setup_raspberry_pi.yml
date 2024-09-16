@@ -61,3 +61,12 @@
         name: docker
         enabled: yes
         state: started
+    # Installer Docker Compose
+    - name: Last ned Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-armv7l
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+    # Bekreft Docker Compose installasjonen
+    - name: Sjekk Docker Compose-versjonen
+      command: docker-compose --version
