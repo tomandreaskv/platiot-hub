@@ -50,3 +50,14 @@
       service:
         name: ssh
         state: restarted
+    # Installer Docker
+    - name: Installer Docker
+      apt:
+        name: docker.io
+        state: present
+    # Start Docker-tjenesten
+    - name: Start Docker-tjenesten
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
