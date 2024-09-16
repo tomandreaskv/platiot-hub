@@ -7,7 +7,7 @@
       apt:
         update_cache: yes
         upgrade: dist
-        cache_valid_time: 3600
+        cache_valid_time: 3600    
     # Installerer nødvendige avhengigheter
     - name: Installer nødvendige avhengigheter
       apt:
@@ -20,17 +20,33 @@
     # Opprett swap-fil
     - name: Opprett swap-fil
       command: fallocate -l 1G /swapfile
-
     # Sett riktig tillatelser på swap-filen
     - name: Sett riktig tillatelser på swap-filen
       file:
         path: /swapfile
         mode: '0600'
-
     # Init swap-filen
     - name: Init swap-filen
       command: mkswap /swapfile
-
     # Aktiver swap-filen
     - name: Aktiver swap-filen
       command: swapon /swapfile
+    # Endre SSH-port til 2222
+    - name: Endre SSH-port til 2222
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Port'
+        line: 'Port 2222'
+        state: present
+    # Deaktiver passordinnlogging
+    - name: Deaktiver passordinnlogging
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+    # Start SSH på nytt for å bruke ny konfigurasjon
+    - name: Start SSH på nytt
+      service:
+        name: ssh
+        state: restarted
