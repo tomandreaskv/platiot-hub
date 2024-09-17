@@ -2,14 +2,16 @@
 - hosts: raspberry_pi
   become: true
   tasks:
-    # Oppdater pakkelisten og oppgrader systemet
-    - name: Oppdater pakkelisten og oppgrader systemet
+
+    # Update package list and upgrade the system
+    - name: Update package list and upgrade system
       apt:
         update_cache: yes
         upgrade: dist
-        cache_valid_time: 3600    
-    # Installerer nødvendige avhengigheter
-    - name: Installer nødvendige avhengigheter
+        cache_valid_time: 3600
+
+    # Install necessary dependencies
+    - name: Install necessary dependencies
       apt:
         name:
           - apt-transport-https
@@ -17,56 +19,67 @@
           - curl
           - software-properties-common
         state: present
-    # Opprett swap-fil
-    - name: Opprett swap-fil
+
+    # Create a swap file
+    - name: Create swap file
       command: fallocate -l 1G /swapfile
-    # Sett riktig tillatelser på swap-filen
-    - name: Sett riktig tillatelser på swap-filen
+
+    # Set correct permissions on the swap file
+    - name: Set correct permissions on the swap file
       file:
         path: /swapfile
         mode: '0600'
-    # Init swap-filen
-    - name: Init swap-filen
+
+    # Initialize the swap file
+    - name: Initialize the swap file
       command: mkswap /swapfile
-    # Aktiver swap-filen
-    - name: Aktiver swap-filen
+
+    # Activate the swap file
+    - name: Activate the swap file
       command: swapon /swapfile
-    # Endre SSH-port til 2222
-    - name: Endre SSH-port til 2222
+
+    # Change SSH port to 2222
+    - name: Change SSH port to 2222
       lineinfile:
         path: /etc/ssh/sshd_config
         regexp: '^#?Port'
         line: 'Port 2222'
         state: present
-    # Deaktiver passordinnlogging
-    - name: Deaktiver passordinnlogging
+
+    # Disable password authentication
+    - name: Disable password authentication
       lineinfile:
         path: /etc/ssh/sshd_config
         regexp: '^#?PasswordAuthentication'
         line: 'PasswordAuthentication no'
         state: present
-    # Start SSH på nytt for å bruke ny konfigurasjon
-    - name: Start SSH på nytt
+
+    # Restart SSH service to apply the new configuration
+    - name: Restart SSH service
       service:
         name: ssh
         state: restarted
-    # Installer Docker
-    - name: Installer Docker
+
+    # Install Docker
+    - name: Install Docker
       apt:
         name: docker.io
         state: present
-    # Start Docker-tjenesten
-    - name: Start Docker-tjenesten
+
+    # Start Docker service
+    - name: Start Docker service
       systemd:
         name: docker
         enabled: yes
         state: started
-    # Installer Docker Compose
-    - name: Last ned Docker Compose
+
+    # Download Docker Compose
+    - name: Download Docker Compose
       get_url:
         url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-armv7l
         dest: /usr/local/bin/docker-compose
         mode: '0755'
-    # Bekreft Docker Compose installasjonen
-    - name: Sjekk Docker Compose-versjonen
+
+    # Verify Docker Compose installation
+    - name: Verify Docker Compose installation
       command: docker-compose --version
